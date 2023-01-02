@@ -8,7 +8,7 @@ import asyncio
 import zipfile
 import shutil
 import click
-
+import tqdm
 
 class Opus:
     def __init__(self):
@@ -17,11 +17,10 @@ class Opus:
         self.tgt = None
 
     def get(self, src: str, tgt: str, max_corpus: int = 10):
-        print('get...')
+        print('get datasets...')
         return asyncio.run(self.async_get(src, tgt, max_corpus))
 
     def download(self, path:str, max_sentences:int = 20_000_000):
-        print('download...')
         return asyncio.run(self.async_download(path, max_sentences))
 
     async def async_get(self, src: str, tgt: str, max_corpus: int = 10):
@@ -69,17 +68,23 @@ class Opus:
             async with aiohttp.ClientSession() as session:
                 async with session.get(self.output[v]['links'], timeout=None) as resp:
                     if resp.status == 200:
-                        print('download ', v)
+                        size = int(resp.headers.get('content-length', 0)) or None
+                        progressbar = tqdm.tqdm(
+                            desc=v, total=size, position=0
+                        )
+
                         while True:
-                            chunk = await resp.content.read(16144)
+                            chunk = await resp.content.read(100144)
                             if not chunk:
                                 break
+
+                            progressbar.update(len(chunk))
 
                             f = await aiofiles.open(f'{dirpath}/{v}.zip', mode='ab')
                             await f.write(chunk)
                             
                             await f.close()
-                        print('completed')
+             
             total_sentences += self.output[v]['sentences']
 
             for f in await aiofiles.os.listdir(dirpath):
