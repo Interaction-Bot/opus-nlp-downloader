@@ -12,11 +12,12 @@ Download aligned text automatly.
 
 ## Cli
 
-Get datasets: `python main.py get src tgt (optional: --max_corpus)`.
-exemple: `python main.py get en fr`
+Get datasets: ```python main.py get src tgt (optional: --max_corpus)```.
+> Exemple: ```python main.py get en fr```
 
-Download datasets: `python main.py download src tgt path (optional: --max_corpus) (optional: --max_sentences)`.
-exemple: `python main.py download en fr data/`
+
+Download datasets: ```python main.py download src tgt path (optional: --max_corpus) (optional: --max_sentences)```.
+> Exemple: ```python main.py download en fr data/```
 
 ## Python
 
